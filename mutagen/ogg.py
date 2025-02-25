@@ -81,6 +81,11 @@ class OggPage(object):
         self.offset = fileobj.tell()
 
         header = fileobj.read(27)
+
+        # Handle malformed ogg pages where the header is all zeros
+        if all(byte == 0 for byte in header):
+            header = b""
+
         if len(header) == 0:
             raise EOFError
 
