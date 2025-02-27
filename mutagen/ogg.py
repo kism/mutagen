@@ -89,8 +89,8 @@ class OggPage(object):
 
         header = fileobj.read(27)
 
-        # If the header is only null bytes, we might be looking at trailing null bytes
-        # on the file. Since we might not be at EOF we also check the max page size.
+        # If there is not enough data to make up the header...
+        # we might be looking at trailing null bytes on the file.
         if len(header) != 27 and all(byte == 0 for byte in header):
             header = b""
 
