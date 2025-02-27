@@ -82,7 +82,7 @@ class OggPage(object):
 
         header = fileobj.read(27)
 
-        # Handle malformed ogg pages where the header is all zeros
+        # Remove trailing null bytes in file, that get interpreted as a malformed ogg page header
         if all(byte == 0 for byte in header):
             header = b""
 
