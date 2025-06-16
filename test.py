@@ -148,9 +148,9 @@ def write_convincing_invalid_ogg(filename):
     with open(filename, 'wb') as f:
         f.write(data)
         f.write(b"\x00" * 2) # lil extra for fun
-    print(f"Created convincing invalid OGG file: {filename}")
-    print("- Has valid Vorbis headers in first 3 pages")
-    print("- Page 3 has invalid segment count (claims more segments than present)")
+    # print(f"Created convincing invalid OGG file: {filename}")
+    # print("- Has valid Vorbis headers in first 3 pages")
+    # print("- Page 3 has invalid segment count (claims more segments than present)")
 
 if __name__ == "__main__":
     write_convincing_invalid_ogg("convincing_invalid.ogg")

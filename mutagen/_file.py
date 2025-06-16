@@ -300,6 +300,7 @@ def File(filething, options=None, easy=False):
             fileobj.seek(0, 0)
         except IOError:
             pass
+
         return Kind(fileobj, filename=filething.filename)
     else:
         return None
