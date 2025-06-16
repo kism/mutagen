@@ -72,7 +72,7 @@ def create_ogg_page(data, serial_number, page_sequence, granule_pos=0, header_ty
     # This is where we make it invalid
     if invalid_segments:
         # Claim more segments than we actually have
-        reported_segments = len(segments) + 10  # Claim 10 more segments
+        reported_segments = len(segments) + 200  # Claim 10 more segments
         # But keep the same segment table (this creates the mismatch)
     else:
         reported_segments = len(segments)
@@ -131,15 +131,15 @@ def create_convincing_invalid_ogg():
     page1 = create_ogg_page(comment_header, serial_number, 1, 0, 0)
     pages.append(page1)
 
-    # Page 2: Valid setup header (minimal)
-    setup_header = struct.pack("<B", 5) + b"vorbis" + b"\x00" * 10 + struct.pack("<B", 1)
-    page2 = create_ogg_page(setup_header, serial_number, 2, 0, 0)
-    pages.append(page2)
+    # # Page 2: Valid setup header (minimal)
+    # setup_header = struct.pack("<B", 5) + b"vorbis" + b"\x00" * 10 + struct.pack("<B", 1)
+    # page2 = create_ogg_page(setup_header, serial_number, 2, 0, 0)
+    # pages.append(page2)
 
-    # Page 3: THIS is where we make it invalid - audio data with wrong segment count
-    audio_data = b"AUDIO" * 100  # Some fake audio data
-    page3 = create_ogg_page(audio_data, serial_number, 3, 4410, 0, invalid_segments=True)
-    pages.append(page3)
+    # # Page 3: THIS is where we make it invalid - audio data with wrong segment count
+    # audio_data = b"AUDIO" * 100  # Some fake audio data
+    # page3 = create_ogg_page(audio_data, serial_number, 3, 4410, 0, invalid_segments=True)
+    # pages.append(page3)
 
     return b"".join(pages)
 
@@ -147,7 +147,7 @@ def write_convincing_invalid_ogg(filename):
     data = create_convincing_invalid_ogg()
     with open(filename, 'wb') as f:
         f.write(data)
-        f.write(b"\x00" * 8) # lil extra for fun
+        f.write(b"\x00" * 2) # lil extra for fun
     print(f"Created convincing invalid OGG file: {filename}")
     print("- Has valid Vorbis headers in first 3 pages")
     print("- Page 3 has invalid segment count (claims more segments than present)")
@@ -162,6 +162,7 @@ if __name__ == "__main__":
 import mutagen
 
 audio = mutagen.File("convincing_invalid.ogg")
+# audio = mutagen.File("test.ogg")
 
 audio['artist'] = "Brad Sucks"
 

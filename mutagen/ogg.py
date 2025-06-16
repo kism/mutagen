@@ -465,7 +465,7 @@ class OggPage(object):
 
         # Finally, if there's any discrepancy in length, we need to
         # renumber the pages for the logical stream.
-        if len(old_pages) != len(new_pages):
+        if True:
             fileobj.seek(new_data_end, 0)
             serial = new_pages[-1].serial
             sequence = new_pages[-1].sequence + 1
