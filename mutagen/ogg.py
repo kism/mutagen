@@ -465,7 +465,7 @@ class OggPage(object):
 
         # Finally, if there's any discrepancy in length, we need to
         # renumber the pages for the logical stream.
-        if True:
+        if len(old_pages) != len(new_pages): # KIERAN, IF THIS IS TRUE, AND THERE ARE TWO EXTRA BYTES AT THE END, THE FAILURE WILL HAPPEN
             fileobj.seek(new_data_end, 0)
             serial = new_pages[-1].serial
             sequence = new_pages[-1].sequence + 1
