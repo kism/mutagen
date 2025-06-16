@@ -15,3 +15,5 @@ coverage
 .pytest_cache
 .mypy_cache
 /poetry.lock
+*.ogg
+*.ogg_bak

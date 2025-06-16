@@ -120,13 +120,16 @@ class OggVCommentDict(VCommentDict):
         # Find the old pages in the file; we'll need to remove them,
         # plus grab any stray setup packet data out of them.
         fileobj.seek(0)
+        print("_inject")
         page = OggPage(fileobj)
         while not page.packets[0].startswith(b"\x03vorbis"):
+            print("INJECT 1")
             page = OggPage(fileobj)
 
         old_pages = [page]
         while not (old_pages[-1].complete or len(old_pages[-1].packets) > 1):
             page = OggPage(fileobj)
+            print("INJECT 2")
             if page.serial == old_pages[0].serial:
                 old_pages.append(page)
 
@@ -143,7 +146,10 @@ class OggVCommentDict(VCommentDict):
         packets[0] = vcomment_data + b"\x00" * new_padding
 
         new_pages = OggPage._from_packets_try_preserve(packets, old_pages)
+        print("Old pages:", len(old_pages))
+        print("New pages:", len(new_pages))
         OggPage.replace(fileobj, old_pages, new_pages)
+        print("WE OUT WHAHOO")
 
 
 class OggVorbis(OggFileType):

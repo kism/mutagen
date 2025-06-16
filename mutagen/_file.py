@@ -45,6 +45,7 @@ class FileType(DictMixin):
             warnings.warn("FileType constructor requires a filename",
                           DeprecationWarning)
         else:
+            print("LOAD")
             self.load(*args, **kwargs)
 
     @loadfile()

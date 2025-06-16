@@ -98,7 +98,7 @@ class VComment(mutagen.Tags, list):
         Framing bits are required by the Vorbis comment specification,
         but are not used in FLAC Vorbis comment blocks.
         """
-
+        print("VORBIS")
         try:
             vendor_length = cdata.uint_le(fileobj.read(4))
             self.vendor = fileobj.read(vendor_length).decode('utf-8', errors)

@@ -81,6 +81,10 @@ class OggPage(object):
         self.offset = fileobj.tell()
 
         header = fileobj.read(27)
+
+        # If there is not enough data to make up the header...
+        # we might be looking at trailing null bytes on the file.
+
         if len(header) == 0:
             raise EOFError
 
@@ -88,6 +92,31 @@ class OggPage(object):
             (oggs, self.version, self.__type_flags,
              self.position, self.serial, self.sequence,
              crc, segments) = struct.unpack("<4sBBqIIiB", header)
+
+            stru = struct.unpack("<4sBBqIIiB", header)
+
+            msg = ""
+            for i, v in enumerate(stru):
+                if i == 0:
+                    msg += f"oggs={v!r} "
+                elif i == 1:
+                    msg += f"version={v} "
+                elif i == 2:
+                    msg += f"type_flags={v} "
+                elif i == 3:
+                    msg += f"position={v} "
+                elif i == 4:
+                    msg += f"serial={v} "
+                elif i == 5:
+                    msg += f"sequence={v} "
+                elif i == 6:
+                    msg += f"crc={v!r} "
+                elif i == 7:
+                    msg += f"segments={v} hex={v:02x} "
+            print(f"Unpacked header: {msg}")
+
+
+
         except struct.error:
             raise error("unable to read full header; got %r" % header)
 
@@ -233,11 +262,16 @@ class OggPage(object):
             else:
                 if page.serial != serial:
                     # Wrong stream, skip this page.
+                    print(f"Skipping page with serial {page.serial}, expected {serial}")
                     continue
                 # Changing the number can't change the page size,
                 # so seeking back based on the current size is safe.
                 fileobj.seek(-page.size, 1)
+
+            # print(f"Renumbering page {page.sequence} to {number}")
+            # print(f"Page offset: {page.offset}, size: {page.size}")
             page.sequence = number
+            print(f"Done, page {number} ")
             fileobj.write(page.write())
             fileobj.seek(page.offset + page.size, 0)
             number += 1
@@ -435,6 +469,7 @@ class OggPage(object):
             fileobj.seek(new_data_end, 0)
             serial = new_pages[-1].serial
             sequence = new_pages[-1].sequence + 1
+            print("Renumbering pages from", sequence, "for serial", serial)
             cls.renumber(fileobj, serial, sequence)
 
     @staticmethod
@@ -527,16 +562,24 @@ class OggFileType(FileType):
             mutagen.MutagenError
         """
 
+        print("LOAD OggFileType")
+
         fileobj = filething.fileobj
 
         try:
+            print(".info")
             self.info = self._Info(fileobj)
+            print(".tags")
             self.tags = self._Tags(fileobj, self.info)
+            print(".tags._post_tags")
             self.info._post_tags(fileobj)
+            print("Done OggFileType 1")
         except (error, IOError) as e:
             reraise(self._Error, e, sys.exc_info()[2])
         except EOFError:
             raise self._Error("no appropriate stream found")
+
+        print("Done OggFileType 2")
 
     @loadfile(writable=True)
     def delete(self, filething=None):
